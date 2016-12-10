@@ -1,0 +1,71 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="UTF-8">
+	<meta name="description" content="Placing a random one image, so as not to overlap as much as possible.">
+	<meta name="keywords" content="random,elements,jquery-plugin">
+	<title>jquery.randomElements</title>
+</head>
+<body id="index">
+
+<div class="oekaki"></div>
+<div class="mini"></div>
+
+<p class="save">保存</p>
+<p class="repeat">再生</p>
+<p class="addLayer">レイヤー追加</p>
+<p class="eraser">消しゴム</p>
+<p class="colorArea">color: <input type="text" class="color"></p>
+<p class="numArea">layer: <input type="text" class="num"></p>
+
+
+<script src="./js/jquery.js"></script>
+<script src="./js/inflate.js"></script>
+<script src="./js/deflate.js"></script>
+<script src="./js/zip.js"></script>
+<script src="./js/rgbcolor.js"></script>
+<script src="../dist/js/jquery.dot.js"></script>
+
+<script type="text/javascript">
+$(function() {
+	$('.oekaki').dot({})
+});
+</script>
+<style>
+* {
+	margin: 0;
+}
+
+canvas {
+	cursor: crosshair;
+}
+
+.mini {
+	width: 64px;
+	position: absolute;
+	top: 0;
+	right: 0;
+}
+
+.oekaki {
+	position: relative;
+	width: 320px;
+	height: 320px;
+}
+
+.layer {
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+
+html,
+body {
+	height: 100%;
+	width: 100%;
+	background: -webkit-linear-gradient(#79e6f7 0%, #e9deb9 100%)
+}
+
+</style>
+</body>
+</html>

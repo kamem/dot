@@ -1,0 +1,102 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/Users/kameimasatoshi/.nodebrew/node/v6.2.2/bin/node',
+1 verbose cli   '/Users/kameimasatoshi/.nodebrew/current/bin/npm',
+1 verbose cli   'install' ]
+2 info using npm@3.9.5
+3 info using node@v6.2.2
+4 silly loadCurrentTree Starting
+5 silly install loadCurrentTree
+6 silly install readLocalPackageData
+7 silly install normalizeTree
+8 silly loadCurrentTree Finishing
+9 silly loadIdealTree Starting
+10 silly install loadIdealTree
+11 silly cloneCurrentTree Starting
+12 silly install cloneCurrentTreeToIdealTree
+13 silly cloneCurrentTree Finishing
+14 silly loadShrinkwrap Starting
+15 silly install loadShrinkwrap
+16 silly loadShrinkwrap Finishing
+17 silly loadAllDepsIntoIdealTree Starting
+18 silly install loadAllDepsIntoIdealTree
+19 silly fetchOtherPackageData zip@git+https://github.com/gildas-lormeau/zip.js.git
+20 silly cache add args [ 'zip@git+https://github.com/gildas-lormeau/zip.js.git', null ]
+21 verbose cache add spec zip@git+https://github.com/gildas-lormeau/zip.js.git
+22 silly cache add parsed spec Result {
+22 silly cache add   raw: 'zip@git+https://github.com/gildas-lormeau/zip.js.git',
+22 silly cache add   scope: null,
+22 silly cache add   name: 'zip',
+22 silly cache add   rawSpec: 'git+https://github.com/gildas-lormeau/zip.js.git',
+22 silly cache add   spec: 'git+https://github.com/gildas-lormeau/zip.js.git',
+22 silly cache add   type: 'hosted',
+22 silly cache add   hosted:
+22 silly cache add    { type: 'github',
+22 silly cache add      ssh: 'git@github.com:gildas-lormeau/zip.js.git',
+22 silly cache add      sshUrl: 'git+ssh://git@github.com/gildas-lormeau/zip.js.git',
+22 silly cache add      httpsUrl: 'git+https://github.com/gildas-lormeau/zip.js.git',
+22 silly cache add      gitUrl: 'git://github.com/gildas-lormeau/zip.js.git',
+22 silly cache add      shortcut: 'github:gildas-lormeau/zip.js',
+22 silly cache add      directUrl: 'https://raw.githubusercontent.com/gildas-lormeau/zip.js/master/package.json' } }
+23 verbose addRemoteGit caching git+https://github.com/gildas-lormeau/zip.js.git
+24 verbose addRemoteGit git+https://github.com/gildas-lormeau/zip.js.git is a repository hosted by github
+25 silly tryClone cloning git+https://github.com/gildas-lormeau/zip.js.git via git+https://github.com/gildas-lormeau/zip.js.git
+26 verbose tryClone git-https-github-com-gildas-lormeau-zip-js-git-76e645b6 not in flight; caching
+27 verbose correctMkdir /Users/kameimasatoshi/.npm/_git-remotes correctMkdir not in flight; initializing
+28 info git [ 'clone',
+28 info git   '--template=/Users/kameimasatoshi/.npm/_git-remotes/_templates',
+28 info git   '--mirror',
+28 info git   'https://github.com/gildas-lormeau/zip.js.git',
+28 info git   '/Users/kameimasatoshi/.npm/_git-remotes/git-https-github-com-gildas-lormeau-zip-js-git-76e645b6' ]
+29 verbose mirrorRemote git+https://github.com/gildas-lormeau/zip.js.git git clone https://github.com/gildas-lormeau/zip.js.git
+30 verbose correctMkdir /Users/kameimasatoshi/.npm/_git-remotes correctMkdir not in flight; initializing
+31 verbose setPermissions git+https://github.com/gildas-lormeau/zip.js.git set permissions on /Users/kameimasatoshi/.npm/_git-remotes/git-https-github-com-gildas-lormeau-zip-js-git-76e645b6
+32 verbose resolveHead git+https://github.com/gildas-lormeau/zip.js.git original treeish: master
+33 info git [ 'rev-list', '-n1', 'master' ]
+34 silly resolveHead git+https://github.com/gildas-lormeau/zip.js.git resolved treeish: 1bead0a3bb9d2e50ea34094bbfe9bb6a2196939a
+35 verbose resolveHead git+https://github.com/gildas-lormeau/zip.js.git resolved Git URL: git+https://github.com/gildas-lormeau/zip.js.git#1bead0a3bb9d2e50ea34094bbfe9bb6a2196939a
+36 silly resolveHead Git working directory: /tmp/npm-9480-9725d0f3/git-cache-45d13167/1bead0a3bb9d2e50ea34094bbfe9bb6a2196939a
+37 info git [ 'clone',
+37 info git   '/Users/kameimasatoshi/.npm/_git-remotes/git-https-github-com-gildas-lormeau-zip-js-git-76e645b6',
+37 info git   '/tmp/npm-9480-9725d0f3/git-cache-45d13167/1bead0a3bb9d2e50ea34094bbfe9bb6a2196939a' ]
+38 verbose cloneResolved git+https://github.com/gildas-lormeau/zip.js.git clone Cloning into '/tmp/npm-9480-9725d0f3/git-cache-45d13167/1bead0a3bb9d2e50ea34094bbfe9bb6a2196939a'...
+38 verbose cloneResolved done.
+39 info git [ 'checkout', '1bead0a3bb9d2e50ea34094bbfe9bb6a2196939a' ]
+40 verbose checkoutTreeish git+https://github.com/gildas-lormeau/zip.js.git checkout Note: checking out '1bead0a3bb9d2e50ea34094bbfe9bb6a2196939a'.
+40 verbose checkoutTreeish
+40 verbose checkoutTreeish You are in 'detached HEAD' state. You can look around, make experimental
+40 verbose checkoutTreeish changes and commit them, and you can discard any commits you make in this
+40 verbose checkoutTreeish state without impacting any branches by performing another checkout.
+40 verbose checkoutTreeish
+40 verbose checkoutTreeish If you want to create a new branch to retain commits you create, you may
+40 verbose checkoutTreeish do so (now or later) by using -b with the checkout command again. Example:
+40 verbose checkoutTreeish
+40 verbose checkoutTreeish   git checkout -b <new-branch-name>
+40 verbose checkoutTreeish
+40 verbose checkoutTreeish HEAD is now at 1bead0a... Merge pull request #129 from duanyao/master
+41 info git [ 'submodule', '-q', 'update', '--init', '--recursive' ]
+42 verbose updateSubmodules git+https://github.com/gildas-lormeau/zip.js.git submodule update
+43 error addLocal Could not install /tmp/npm-9480-9725d0f3/git-cache-45d13167/1bead0a3bb9d2e50ea34094bbfe9bb6a2196939a
+44 silly fetchPackageMetaData Error: EISDIR: illegal operation on a directory, read
+44 silly fetchPackageMetaData     at Error (native)
+44 silly fetchPackageMetaData  error for zip@git+https://github.com/gildas-lormeau/zip.js.git { Error: EISDIR: illegal operation on a directory, read
+44 silly fetchPackageMetaData     at Error (native) errno: -21, code: 'EISDIR', syscall: 'read' }
+45 silly rollbackFailedOptional Starting
+46 silly rollbackFailedOptional Finishing
+47 silly runTopLevelLifecycles Starting
+48 silly runTopLevelLifecycles Finishing
+49 silly install printInstalled
+50 verbose stack Error: EISDIR: illegal operation on a directory, read
+50 verbose stack     at Error (native)
+51 verbose cwd /Users/kameimasatoshi/Gitwork/plugins/dot
+52 error Darwin 16.1.0
+53 error argv "/Users/kameimasatoshi/.nodebrew/node/v6.2.2/bin/node" "/Users/kameimasatoshi/.nodebrew/current/bin/npm" "install"
+54 error node v6.2.2
+55 error npm  v3.9.5
+56 error code EISDIR
+57 error errno -21
+58 error syscall read
+59 error eisdir EISDIR: illegal operation on a directory, read
+60 error eisdir This is most likely not a problem with npm itself
+60 error eisdir and is related to npm not being able to find a package.json in
+60 error eisdir a package you are trying to install.
+61 verbose exit [ -21, true ]
