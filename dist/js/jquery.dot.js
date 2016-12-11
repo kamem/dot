@@ -18,7 +18,7 @@
 	}
 } (typeof window !== "undefined" ? window : this, function ($, global) {
 ;(function() {
-var Stage = {}, Helper = {}, Oekaki = {}, jquerydotjs;
+var Stage = {}, Helper = {}, BlendMode = {}, OekakiHelper = {}, Oekaki = {}, jquerydotjs;
 Stage = function (exports) {
   Object.defineProperty(exports, '__esModule', { value: true });
   function _classCallCheck(instance, Constructor) {
@@ -57,6 +57,7 @@ Stage = function (exports) {
       this.canvasHeight = this.height * this.pxHeight;
       this.layers = [];
       this.layerNum = -1;
+      this.canvas = this.$el.append('<canvas class="layer"></canvas>').find('.layer')[0];
       this.createNewLayer('#fff');
       this.createNewLayer('');
     }
@@ -65,55 +66,94 @@ Stage = function (exports) {
         key: 'createNewLayer',
         value: function createNewLayer() {
           var color = arguments.length <= 0 || arguments[0] === undefined ? '' : arguments[0];
-          this.canvas = this.$el.append('<canvas class="layer"></canvas>').find('.layer');
           this.changeLayers({ color: color });
           this.setLayer({ layerNum: this.layerNum });
         }
       },
       {
+        key: 'changeBlendMode',
+        value: function changeBlendMode(_ref) {
+          var _ref$blendMode = _ref.blendMode;
+          var blendMode = _ref$blendMode === undefined ? 0 : _ref$blendMode;
+          this.layers[this.layerNum].blendMode = blendMode;
+        }
+      },
+      {
+        key: 'changeOpacity',
+        value: function changeOpacity(_ref2) {
+          var _ref2$opacity = _ref2.opacity;
+          var opacity = _ref2$opacity === undefined ? 100 : _ref2$opacity;
+          this.layers[this.layerNum].opacity = opacity;
+        }
+      },
+      {
         key: 'changeStagePxColor',
-        value: function changeStagePxColor(_ref) {
-          var pointX = _ref.pointX;
-          var pointY = _ref.pointY;
-          var color = _ref.color;
-          this.layers[this.layerNum][pointY][pointX] = color;
+        value: function changeStagePxColor(_ref3) {
+          var pointX = _ref3.pointX;
+          var pointY = _ref3.pointY;
+          var color = _ref3.color;
+          this.layers[this.layerNum].ary[pointY][pointX] = color;
+        }
+      },
+      {
+        key: 'getLayerPxColors',
+        value: function getLayerPxColors(_ref4) {
+          var _this = this;
+          var pointX = _ref4.pointX;
+          var pointY = _ref4.pointY;
+          var layerPxColors = [];
+          this.layers.forEach(function (layer, layerNum) {
+            layerPxColors.push([
+              layer.opacity,
+              layer.blendMode,
+              _this.getStagePxColor({
+                layerNum: layerNum,
+                pointX: pointX,
+                pointY: pointY
+              })
+            ]);
+          });
+          return layerPxColors;
         }
       },
       {
         key: 'getStagePxColor',
-        value: function getStagePxColor(_ref2) {
-          var _ref2$layerNum = _ref2.layerNum;
-          var layerNum = _ref2$layerNum === undefined ? this.layerNum : _ref2$layerNum;
-          var pointX = _ref2.pointX;
-          var pointY = _ref2.pointY;
-          return this.layers[layerNum][pointY][pointX];
+        value: function getStagePxColor(_ref5) {
+          var _ref5$layerNum = _ref5.layerNum;
+          var layerNum = _ref5$layerNum === undefined ? this.layerNum : _ref5$layerNum;
+          var pointX = _ref5.pointX;
+          var pointY = _ref5.pointY;
+          return this.layers[layerNum].ary[pointY][pointX];
         }
       },
       {
         key: 'changeLayers',
         value: function changeLayers() {
-          var _ref3 = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-          var layers = _ref3.layers;
-          var color = _ref3.color;
+          var _ref6 = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+          var layers = _ref6.layers;
+          var color = _ref6.color;
           if (layers)
             return this.layers = layers;
           this.layerNum += 1;
-          this.layers[this.layerNum] = this.createStageAry(color);
+          this.layers[this.layerNum] = {};
+          this.changeBlendMode({});
+          this.changeOpacity({});
+          this.layers[this.layerNum].ary = this.createStageAry(color);
         }
       },
       {
         key: 'clearLayer',
         value: function clearLayer(color) {
-          this.layers[this.layerNum] = this.createStageAry(color);
+          this.layers[this.layerNum].ary = this.createStageAry(color);
         }
       },
       {
         key: 'clearAllLayer',
         value: function clearAllLayer() {
-          var _this = this;
+          var _this2 = this;
           this.layers.forEach(function (layer, layerNum) {
             var color = layerNum === 0 ? '#fff' : '';
-            _this.layers[layerNum] = _this.createStageAry(color);
+            _this2.layers[layerNum].ary = _this2.createStageAry(color);
           });
         }
       },
@@ -121,48 +161,48 @@ Stage = function (exports) {
         key: 'createStageAry',
         value: function createStageAry() {
           var color = arguments.length <= 0 || arguments[0] === undefined ? '' : arguments[0];
-          var stage = [];
+          var layer = [];
           for (var i = 0; i < this.height; i++) {
-            stage[i] = [];
+            layer[i] = [];
             for (var j = 0; j < this.width; j++) {
-              stage[i][j] = color;
+              layer[i][j] = color;
             }
           }
-          return stage;
+          return layer;
         }
       },
       {
         key: 'changePxSize',
-        value: function changePxSize(_ref4) {
-          var _ref4$pxWidth = _ref4.pxWidth;
-          var pxWidth = _ref4$pxWidth === undefined ? this.pxWidth : _ref4$pxWidth;
-          var _ref4$pxHeight = _ref4.pxHeight;
-          var pxHeight = _ref4$pxHeight === undefined ? this.pxHeight : _ref4$pxHeight;
+        value: function changePxSize(_ref7) {
+          var _ref7$pxWidth = _ref7.pxWidth;
+          var pxWidth = _ref7$pxWidth === undefined ? this.pxWidth : _ref7$pxWidth;
+          var _ref7$pxHeight = _ref7.pxHeight;
+          var pxHeight = _ref7$pxHeight === undefined ? this.pxHeight : _ref7$pxHeight;
           this.pxWidth = pxWidth;
           this.pxHeight = pxHeight;
         }
       },
       {
         key: 'changeSize',
-        value: function changeSize(_ref5) {
-          var _ref5$width = _ref5.width;
-          var width = _ref5$width === undefined ? this.width : _ref5$width;
-          var _ref5$height = _ref5.height;
-          var height = _ref5$height === undefined ? this.height : _ref5$height;
+        value: function changeSize(_ref8) {
+          var _ref8$width = _ref8.width;
+          var width = _ref8$width === undefined ? this.width : _ref8$width;
+          var _ref8$height = _ref8.height;
+          var height = _ref8$height === undefined ? this.height : _ref8$height;
           this.canvasWidth = width * this.pxWidth;
           this.canvasHeight = height * this.pxHeight;
         }
       },
       {
         key: 'setLayer',
-        value: function setLayer(_ref6) {
-          var layerNum = _ref6.layerNum;
+        value: function setLayer(_ref9) {
+          var layerNum = _ref9.layerNum;
           this.layerNum = layerNum;
-          if (this.canvas[layerNum].width !== this.canvasWidth)
-            this.canvas[layerNum].width = this.canvasWidth;
-          if (this.canvas[layerNum].height !== this.canvasHeight)
-            this.canvas[layerNum].height = this.canvasHeight;
-          this.ctx = this.canvas[layerNum].getContext('2d');
+          if (this.canvas.width !== this.canvasWidth)
+            this.canvas.width = this.canvasWidth;
+          if (this.canvas.height !== this.canvasHeight)
+            this.canvas.height = this.canvasHeight;
+          this.ctx = this.canvas.getContext('2d');
         }
       },
       {
@@ -204,7 +244,173 @@ Helper = function (exports) {
   };
   return exports;
 }(Helper);
-Oekaki = function (exports, _Helper) {
+BlendMode = function (exports) {
+  Object.defineProperty(exports, '__esModule', { value: true });
+  var BLEND_MODE = exports.BLEND_MODE = [
+    {
+      type: 'normal',
+      name: '通常'
+    },
+    {
+      type: 'multiply',
+      name: '乗算'
+    },
+    {
+      type: 'lighten',
+      name: '比較\uFF08明\uFF09'
+    },
+    {
+      type: 'darken',
+      name: '比較\uFF08暗\uFF09'
+    },
+    {
+      type: 'screen',
+      name: 'スクリーン'
+    },
+    {
+      type: 'overlay',
+      name: 'オーバーレイ'
+    },
+    {
+      type: 'hardLight',
+      name: 'ハードライト'
+    },
+    {
+      type: 'softLight',
+      name: 'ソフトライト'
+    },
+    {
+      type: 'colorDodge',
+      name: '覆い焼きカラー'
+    },
+    {
+      type: 'darken',
+      name: '比較\uFF08暗\uFF09'
+    }
+  ];
+  return exports;
+}(BlendMode);
+OekakiHelper = function (exports, _BlendMode) {
+  Object.defineProperty(exports, '__esModule', { value: true });
+  exports.selectColor = undefined;
+  var _slicedToArray = function () {
+    function sliceIterator(arr, i) {
+      var _arr = [];
+      var _n = true;
+      var _d = false;
+      var _e = undefined;
+      try {
+        for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
+          _arr.push(_s.value);
+          if (i && _arr.length === i)
+            break;
+        }
+      } catch (err) {
+        _d = true;
+        _e = err;
+      } finally {
+        try {
+          if (!_n && _i['return'])
+            _i['return']();
+        } finally {
+          if (_d)
+            throw _e;
+        }
+      }
+      return _arr;
+    }
+    return function (arr, i) {
+      if (Array.isArray(arr)) {
+        return arr;
+      } else if (Symbol.iterator in Object(arr)) {
+        return sliceIterator(arr, i);
+      } else {
+        throw new TypeError('Invalid attempt to destructure non-iterable instance');
+      }
+    };
+  }();
+  var changeColor = function changeColor(_ref) {
+    var color1 = _ref.color1;
+    var color2 = _ref.color2;
+    var _color = _slicedToArray(color1, 3);
+    var bottomOpacity = _color[0];
+    var bottomBlendMode = _color[1];
+    var bottomColor = _color[2];
+    var _color2 = _slicedToArray(color2, 3);
+    var topOpacity = _color2[0];
+    var topBlendMode = _color2[1];
+    var topColor = _color2[2];
+    var bottomColorRGB = new RGBColor(bottomColor);
+    var topColorRGB = new RGBColor(topColor);
+    var mixedColor = [topBlendMode];
+    var r1 = bottomColorRGB.r;
+    var g1 = bottomColorRGB.g;
+    var b1 = bottomColorRGB.b;
+    var r2 = topColorRGB.r;
+    var g2 = topColorRGB.g;
+    var b2 = topColorRGB.b;
+    var r3 = Math.floor(r2 * topOpacity / 100 + r1 * (100 - topOpacity) / 100);
+    var g3 = Math.floor(g2 * topOpacity / 100 + g1 * (100 - topOpacity) / 100);
+    var b3 = Math.floor(b2 * topOpacity / 100 + b1 * (100 - topOpacity) / 100);
+    var color = '';
+    switch (_BlendMode.BLEND_MODE[topBlendMode].type) {
+    case 'normal':
+      color = 'rgb(' + [
+        r3,
+        g3,
+        b3
+      ].join(',') + ')';
+      mixedColor.push(topColor ? new RGBColor(color).toHex() : bottomColor);
+      break;
+    case 'multiply':
+      color = 'rgb(' + [
+        Math.floor(r1 * r2 / 255),
+        Math.floor(g1 * g2 / 255),
+        Math.floor(b1 * b2 / 255)
+      ].join(',') + ')';
+      mixedColor.push(topColor ? new RGBColor(color).toHex() : bottomColor);
+      break;
+    case 'lighten':
+      color = 'rgb(' + [
+        r2 > r1 ? r2 : r1,
+        g2 > g1 ? g2 : g1,
+        b2 > b1 ? b2 : b1
+      ].join(',') + ')';
+      mixedColor.push(topColor ? new RGBColor(color).toHex() : bottomColor);
+      break;
+    case 'darken':
+      color = 'rgb(' + [
+        r2 < r1 ? r2 : r1,
+        g2 < g1 ? g2 : g1,
+        b2 < b1 ? b2 : b1
+      ].join(',') + ')';
+      mixedColor.push(topColor ? new RGBColor(color).toHex() : bottomColor);
+      break;
+    case 'screen':
+      color = 'rgb(' + [
+        255 - ((255 - r1) * (255 - r2) >> 8),
+        255 - ((255 - g1) * (255 - g2) >> 8),
+        255 - ((255 - b1) * (255 - b2) >> 8)
+      ].join(',') + ')';
+      mixedColor.push(topColor ? new RGBColor(color).toHex() : bottomColor);
+      break;
+    default:
+      mixedColor.push(topColor || bottomColor);
+      break;
+    }
+    return mixedColor;
+  };
+  var selectColor = exports.selectColor = function selectColor(colors) {
+    return colors.reduce(function (color1, color2) {
+      return changeColor({
+        color1: color1,
+        color2: color2
+      });
+    })[1];
+  };
+  return exports;
+}(OekakiHelper, BlendMode);
+Oekaki = function (exports, _Helper, _OekakiHelper) {
   Object.defineProperty(exports, '__esModule', { value: true });
   exports.Oekaki = undefined;
   var _slicedToArray = function () {
@@ -274,6 +480,7 @@ Oekaki = function (exports, _Helper) {
       var _ref$color = _ref.color;
       var color = _ref$color === undefined ? '#000' : _ref$color;
       var drawingFunction = _ref.drawingFunction;
+      var endFunction = _ref.endFunction;
       _classCallCheck(this, Oekaki);
       this.stage = stage;
       this.strokeStyle = strokeStyle;
@@ -289,6 +496,7 @@ Oekaki = function (exports, _Helper) {
       this.history = [];
       this.repeatSpeed = 10;
       this.drawingFunction = drawingFunction;
+      this.endFunction = endFunction;
     }
     _createClass(Oekaki, [
       {
@@ -362,7 +570,7 @@ Oekaki = function (exports, _Helper) {
         key: 'addHistory',
         value: function addHistory() {
           var lastHistory = this.history[this.history.length - 1];
-          if (this.history.length === 0 || lastHistory[0] !== this.pointX || lastHistory[1] !== this.pointY || lastHistory[2] !== this.fillStyle) {
+          if (this.history.length === 0 || lastHistory[0] !== this.stage.layerNum || lastHistory[1] !== this.pointX || lastHistory[2] !== this.pointY || lastHistory[3] !== this.fillStyle) {
             this.history.push([
               this.stage.layerNum,
               this.pointX,
@@ -381,8 +589,12 @@ Oekaki = function (exports, _Helper) {
           var pointY = _ref7$pointY === undefined ? this.pointY : _ref7$pointY;
           var _ref7$fillStyle = _ref7.fillStyle;
           var fillStyle = _ref7$fillStyle === undefined ? this.fillStyle : _ref7$fillStyle;
-          var action = fillStyle ? 'fillRect' : 'clearRect';
-          this.stage.ctx.fillStyle = fillStyle;
+          var color = (0, _OekakiHelper.selectColor)(this.stage.getLayerPxColors({
+            pointX: pointX,
+            pointY: pointY
+          }));
+          var action = color ? 'fillRect' : 'clearRect';
+          this.stage.ctx.fillStyle = color;
           this.stage.ctx[action](pointX * this.stage.pxWidth, pointY * this.stage.pxHeight, this.stage.pxWidth, this.stage.pxHeight);
         }
       },
@@ -401,15 +613,12 @@ Oekaki = function (exports, _Helper) {
         value: function load() {
           var _this = this;
           var layers = arguments.length <= 0 || arguments[0] === undefined ? this.stage.layers : arguments[0];
-          layers.forEach(function (layer, layerNum) {
-            _this.stage.setLayer({ layerNum: layerNum });
-            layer.forEach(function (rows, pointY) {
-              rows.forEach(function (color, pointX) {
-                _this.draw({
-                  pointX: pointX,
-                  pointY: pointY,
-                  fillStyle: color
-                });
+          layers[0].ary.forEach(function (rows, pointY) {
+            rows.forEach(function (color, pointX) {
+              _this.draw({
+                pointX: pointX,
+                pointY: pointY,
+                fillStyle: color
               });
             });
           });
@@ -433,16 +642,16 @@ Oekaki = function (exports, _Helper) {
               var pointY = _history$count[2];
               var fillStyle = _history$count[3];
               _this2.stage.setLayer({ layerNum: layerNum });
-              _this2.draw({
-                pointX: pointX,
-                pointY: pointY,
-                fillStyle: fillStyle
-              });
               count++;
               _this2.stage.changeStagePxColor({
                 pointX: pointX,
                 pointY: pointY,
                 color: fillStyle
+              });
+              _this2.draw({
+                pointX: pointX,
+                pointY: pointY,
+                fillStyle: fillStyle
               });
               if (_this2.drawingFunction)
                 _this2.drawingFunction();
@@ -481,6 +690,8 @@ Oekaki = function (exports, _Helper) {
             });
           }).on(_Helper.EVENT_TYPE.touchEnd, function (e) {
             _this3.changeDrawing(false);
+            if (_this3.endFunction)
+              _this3.endFunction();
           }).mouseleave(function (e) {
             _this3.changeDrawing(false);
           });
@@ -500,7 +711,6 @@ Oekaki = function (exports, _Helper) {
             y: y
           });
           this.changeDrawPoint();
-          this.draw({});
           var _getDrawPoint2 = this.getDrawPoint({});
           var pointX = _getDrawPoint2.pointX;
           var pointY = _getDrawPoint2.pointY;
@@ -509,6 +719,8 @@ Oekaki = function (exports, _Helper) {
             pointY: pointY,
             color: this.fillStyle
           });
+          this.draw({});
+          //console.log(selectColor(this.stage.getLayerPxColors({pointX, pointY})));
           this.addHistory();
           if (this.drawingFunction)
             this.drawingFunction();
@@ -518,7 +730,7 @@ Oekaki = function (exports, _Helper) {
     return Oekaki;
   }();
   return exports;
-}(Oekaki, Helper);
+}(Oekaki, Helper, OekakiHelper);
 jquerydotjs = function (_Stage, _Oekaki) {
   $.fn.dot = function (options) {
     var $el = $(this);
@@ -542,7 +754,7 @@ jquerydotjs = function (_Stage, _Oekaki) {
     var miniOekaki = new _Oekaki.Oekaki({ stage: mini });
     var oekaki = new _Oekaki.Oekaki({
       stage: stage,
-      drawingFunction: function drawingFunction() {
+      endFunction: function endFunction() {
         mini.changeLayers({ layers: stage.layers });
         miniOekaki.load();  //console.log(new RGBColor(oekaki.color));
                             //console.log('test');
@@ -557,17 +769,26 @@ jquerydotjs = function (_Stage, _Oekaki) {
     $('.save').on('click', function (e) {
       oekaki.save();
     });
-    $('.repeat').on('click', function (e) {
+    $('.replay').on('click', function (e) {
       oekaki.changeHistory(JSON.parse(localStorage['draw']));
       oekaki.repeat({});
     });
     $('.num').on('keyup', function (e) {
       stage.setLayer({ layerNum: parseInt(e.target.value) });
-      stage.setLayer({ layerNum: parseInt(e.target.value) });
+    });
+    $('.blend').on('keyup', function (e) {
+      stage.changeBlendMode({ blendMode: parseInt(e.target.value) });
+      oekaki.load();
+      miniOekaki.load();
     });
     $('.addLayer').on('click', function (e) {
       stage.createNewLayer();
       $('.num').val(stage.layerNum);
+    });
+    $('.opacity').on('keyup', function (e) {
+      stage.changeOpacity({ opacity: parseFloat(e.target.value) });
+      oekaki.load();
+      miniOekaki.load();
     });
     $('.eraser').on('click', function (e) {
       oekaki.changeFillStyle({ fillStyle: oekaki.fillStyle ? '' : oekaki.color });

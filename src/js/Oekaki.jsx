@@ -1,11 +1,13 @@
 import { EVENT_TYPE, isMobile } from './Helper'
+import { selectColor } from './OekakiHelper'
 
 export class Oekaki {
   constructor({
       stage,
       strokeStyle,
       color = '#000',
-      drawingFunction
+      drawingFunction,
+      endFunction
     }) {
     this.stage = stage
 
@@ -22,6 +24,7 @@ export class Oekaki {
     this.history = []
     this.repeatSpeed = 10
     this.drawingFunction = drawingFunction;
+    this.endFunction = endFunction;
   }
 
   changeColor({color}) {
@@ -71,9 +74,10 @@ export class Oekaki {
     const lastHistory = this.history[this.history.length - 1];
     if(
       this.history.length === 0 ||
-      lastHistory[0] !== this.pointX ||
-      lastHistory[1] !== this.pointY ||
-      lastHistory[2] !== this.fillStyle
+      lastHistory[0] !== this.stage.layerNum ||
+      lastHistory[1] !== this.pointX ||
+      lastHistory[2] !== this.pointY ||
+      lastHistory[3] !== this.fillStyle
     ) {
       this.history.push([
         this.stage.layerNum,
@@ -89,9 +93,9 @@ export class Oekaki {
     pointY = this.pointY,
     fillStyle = this.fillStyle
   }) {
-    const action = fillStyle ? 'fillRect' : 'clearRect'
-
-    this.stage.ctx.fillStyle = fillStyle
+    const color = selectColor(this.stage.getLayerPxColors({pointX, pointY}));
+    const action = color ? 'fillRect' : 'clearRect'
+    this.stage.ctx.fillStyle = color
 
     this.stage.ctx[action](
       pointX * this.stage.pxWidth,
@@ -111,16 +115,12 @@ export class Oekaki {
   }
 
   load(layers = this.stage.layers) {
-    layers.forEach((layer, layerNum) => {
-      this.stage.setLayer({layerNum})
-
-      layer.forEach((rows, pointY) => {
-        rows.forEach((color, pointX) => {
-          this.draw({
-            pointX,
-            pointY,
-            fillStyle: color
-          })
+    layers[0].ary.forEach((rows, pointY) => {
+      rows.forEach((color, pointX) => {
+        this.draw({
+          pointX,
+          pointY,
+          fillStyle: color
         })
       })
     })
@@ -138,7 +138,6 @@ export class Oekaki {
         const [layerNum, pointX, pointY, fillStyle] = history[count];
         this.stage.setLayer({layerNum})
 
-        this.draw({pointX, pointY, fillStyle});
         count++;
 
         this.stage.changeStagePxColor({
@@ -146,6 +145,9 @@ export class Oekaki {
           pointY,
           color: fillStyle
         })
+
+        this.draw({pointX, pointY, fillStyle});
+
         if(this.drawingFunction) this.drawingFunction()
       }, speed * i);
     }
@@ -180,6 +182,8 @@ export class Oekaki {
     })
     .on(EVENT_TYPE.touchEnd, (e) => {
       this.changeDrawing(false)
+
+      if(this.endFunction) this.endFunction()
     })
     .mouseleave((e) => {
       this.changeDrawing(false)
@@ -190,14 +194,18 @@ export class Oekaki {
     this.changePoint({x, y})
     this.changeStartPoint({x, y})
     this.changeDrawPoint()
-    this.draw({})
 
     const { pointX, pointY } = this.getDrawPoint({})
+
     this.stage.changeStagePxColor({
       pointX,
       pointY,
       color: this.fillStyle
     })
+
+    this.draw({})
+
+    //console.log(selectColor(this.stage.getLayerPxColors({pointX, pointY})));
 
     this.addHistory()
 

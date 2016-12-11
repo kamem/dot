@@ -33,7 +33,7 @@ $.fn.dot = function(options) {
 	})
 	const oekaki = new Oekaki({
 		stage,
-		drawingFunction: () => {
+		endFunction: () => {
 			mini.changeLayers({layers: stage.layers})
 			miniOekaki.load()
 
@@ -56,14 +56,19 @@ $.fn.dot = function(options) {
 		oekaki.save()
 	});
 
-	$('.repeat').on('click', (e) => {
+	$('.replay').on('click', (e) => {
 		oekaki.changeHistory(JSON.parse(localStorage['draw']))
 		oekaki.repeat({})
 	});
 
 	$('.num').on('keyup', (e) => {
 		stage.setLayer({layerNum: parseInt(e.target.value)})
-		stage.setLayer({layerNum: parseInt(e.target.value)})
+	});
+
+	$('.blend').on('keyup', (e) => {
+		stage.changeBlendMode({blendMode: parseInt(e.target.value)})
+		oekaki.load()
+		miniOekaki.load()
 	});
 
 	$('.addLayer').on('click', (e) => {
@@ -71,6 +76,11 @@ $.fn.dot = function(options) {
 		$('.num').val(stage.layerNum)
 	});
 
+	$('.opacity').on('keyup', (e) => {
+		stage.changeOpacity({opacity: parseFloat(e.target.value)})
+		oekaki.load()
+		miniOekaki.load()
+	});
 
 	$('.eraser').on('click', (e) => {
 		oekaki.changeFillStyle({fillStyle: oekaki.fillStyle ? '' : oekaki.color})
