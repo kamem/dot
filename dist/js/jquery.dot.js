@@ -82,7 +82,7 @@ Stage = function (exports) {
         key: 'changeOpacity',
         value: function changeOpacity(_ref2) {
           var _ref2$opacity = _ref2.opacity;
-          var opacity = _ref2$opacity === undefined ? 100 : _ref2$opacity;
+          var opacity = _ref2$opacity === undefined ? 1 : _ref2$opacity;
           this.layers[this.layerNum].opacity = opacity;
         }
       },
@@ -329,15 +329,46 @@ OekakiHelper = function (exports, _BlendMode) {
       }
     };
   }();
-  var changeColor = function changeColor(_ref) {
-    var color1 = _ref.color1;
-    var color2 = _ref.color2;
+  //blendMode sample site
+  //http://jsdo.it/akm2/3PMd
+  //http://d.hatena.ne.jp/yus_iri/20110921/1316610121
+  var addAlphaColor = function addAlphaColor(_ref) {
+    var r = _ref.r;
+    var g = _ref.g;
+    var b = _ref.b;
+    var bottomAlpha = _ref.bottomAlpha;
+    var topAlpha = _ref.topAlpha;
+    var _r = _slicedToArray(r, 3);
+    var r1 = _r[0];
+    var r2 = _r[1];
+    var r3 = _r[2];
+    var _g = _slicedToArray(g, 3);
+    var g1 = _g[0];
+    var g2 = _g[1];
+    var g3 = _g[2];
+    var _b = _slicedToArray(b, 3);
+    var b1 = _b[0];
+    var b2 = _b[1];
+    var b3 = _b[2];
+    var a1 = topAlpha * bottomAlpha;
+    var a2 = topAlpha * (1 - bottomAlpha);
+    var a3 = (1 - topAlpha) * bottomAlpha;
+    var a = a1 + a2 + a3;
+    return [
+      Math.floor((a1 * r3 + a2 * r2 + a3 * r1) / a),
+      Math.floor((a1 * g3 + a2 * g2 + a3 * g1) / a),
+      Math.floor((a1 * b3 + a2 * b2 + a3 * b1) / a)
+    ];
+  };
+  var changeColor = function changeColor(_ref2) {
+    var color1 = _ref2.color1;
+    var color2 = _ref2.color2;
     var _color = _slicedToArray(color1, 3);
-    var bottomOpacity = _color[0];
+    var bottomAlpha = _color[0];
     var bottomBlendMode = _color[1];
     var bottomColor = _color[2];
     var _color2 = _slicedToArray(color2, 3);
-    var topOpacity = _color2[0];
+    var topAlpha = _color2[0];
     var topBlendMode = _color2[1];
     var topColor = _color2[2];
     var bottomColorRGB = new RGBColor(bottomColor);
@@ -349,55 +380,68 @@ OekakiHelper = function (exports, _BlendMode) {
     var r2 = topColorRGB.r;
     var g2 = topColorRGB.g;
     var b2 = topColorRGB.b;
-    var r3 = Math.floor(r2 * topOpacity / 100 + r1 * (100 - topOpacity) / 100);
-    var g3 = Math.floor(g2 * topOpacity / 100 + g1 * (100 - topOpacity) / 100);
-    var b3 = Math.floor(b2 * topOpacity / 100 + b1 * (100 - topOpacity) / 100);
-    var color = '';
+    var formula = function formula() {
+    };
     switch (_BlendMode.BLEND_MODE[topBlendMode].type) {
     case 'normal':
-      color = 'rgb(' + [
-        r3,
-        g3,
-        b3
-      ].join(',') + ')';
-      mixedColor.push(topColor ? new RGBColor(color).toHex() : bottomColor);
+      formula = function formula(c1, c2) {
+        return c2;
+      };
       break;
     case 'multiply':
-      color = 'rgb(' + [
-        Math.floor(r1 * r2 / 255),
-        Math.floor(g1 * g2 / 255),
-        Math.floor(b1 * b2 / 255)
-      ].join(',') + ')';
-      mixedColor.push(topColor ? new RGBColor(color).toHex() : bottomColor);
+      formula = function formula(c1, c2) {
+        return c1 * c2 / 255;
+      };
       break;
     case 'lighten':
-      color = 'rgb(' + [
-        r2 > r1 ? r2 : r1,
-        g2 > g1 ? g2 : g1,
-        b2 > b1 ? b2 : b1
-      ].join(',') + ')';
-      mixedColor.push(topColor ? new RGBColor(color).toHex() : bottomColor);
+      formula = function formula(c1, c2) {
+        return c2 > c1 ? c2 : c1;
+      };
       break;
     case 'darken':
-      color = 'rgb(' + [
-        r2 < r1 ? r2 : r1,
-        g2 < g1 ? g2 : g1,
-        b2 < b1 ? b2 : b1
-      ].join(',') + ')';
-      mixedColor.push(topColor ? new RGBColor(color).toHex() : bottomColor);
+      formula = function formula(c1, c2) {
+        return c2 < c1 ? c2 : c1;
+      };
       break;
     case 'screen':
-      color = 'rgb(' + [
-        255 - ((255 - r1) * (255 - r2) >> 8),
-        255 - ((255 - g1) * (255 - g2) >> 8),
-        255 - ((255 - b1) * (255 - b2) >> 8)
-      ].join(',') + ')';
-      mixedColor.push(topColor ? new RGBColor(color).toHex() : bottomColor);
+      formula = function formula(c1, c2) {
+        return 255 - ((255 - c1) * (255 - c2) >> 8);
+      };
+      break;
+    case 'overlay':
+      formula = function formula(c1, c2) {
+        return c1 > 128 ? c2 + (2 * c1 - 255) - c2 * (2 * c1 - 255) / 255 : c2 * 2 * c1 / 255;
+      };
       break;
     default:
-      mixedColor.push(topColor || bottomColor);
+      formula = function formula(c1, c2) {
+        return c2;
+      };
       break;
     }
+    var r3 = formula(r1, r2);
+    var g3 = formula(g1, g2);
+    var b3 = formula(b1, b2);
+    var alphaColor = addAlphaColor({
+      r: [
+        r1,
+        r2,
+        r3
+      ],
+      g: [
+        g1,
+        g2,
+        g3
+      ],
+      b: [
+        b1,
+        b2,
+        b3
+      ],
+      bottomAlpha: bottomAlpha,
+      topAlpha: topAlpha
+    });
+    mixedColor.push(topColor ? new RGBColor('rgb(' + alphaColor + ')').toHex() : bottomColor);
     return mixedColor;
   };
   var selectColor = exports.selectColor = function selectColor(colors) {

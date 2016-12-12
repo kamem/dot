@@ -25,7 +25,7 @@ export class Stage {
     this.layers[this.layerNum].blendMode = blendMode;
   }
 
-  changeOpacity({opacity = 100}) {
+  changeOpacity({opacity = 1}) {
     this.layers[this.layerNum].opacity = opacity;
   }
 
